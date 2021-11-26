@@ -3,19 +3,28 @@ import Image from 'next/image';
 import Head from 'next/head';
 import Layout from '../../components/layout';
 
-export default function FirstPost() {
+export default function FirstPost({ data }) {
   return (
     <Layout>
       <Head>
         <title>First Post</title>
       </Head>
       <h1>First Post</h1>
-      <Image
-        src="/images/g-and-c.jpg" // Route of the image file
-        height={144} // Desired size with correct aspect ratio
-        width={144} // Desired size with correct aspect ratio
-        alt="Your Name"
-      />
+      <ul>
+        {data.data.map((row) => {
+          return (
+            <li>
+              <a href={row.url} target="_blank">
+                {row.title}
+              </a>
+              <p>{row.content}</p>
+              <p>
+                {row.time} {row.date}
+              </p>
+            </li>
+          );
+        })}
+      </ul>
       <h2>
         <Link href="/">
           <a className="foo" target="_self" rel="noopener noreferrer">
@@ -25,4 +34,15 @@ export default function FirstPost() {
       </h2>
     </Layout>
   );
+}
+export async function getServerSideProps() {
+  const res = await fetch(
+    'https://inshortsapi.vercel.app/news?category=technology'
+  );
+  const data = await res.json();
+  return {
+    props: {
+      data,
+    },
+  };
 }
